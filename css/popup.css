@@ -1,4 +1,15 @@
-.container {
-    padding-top:15px;
+body {
+    padding-bottom:15px;
+}
+
+.commprod-timeline-container { 
+    width:600px;
+}
+
+.navbar .brand { 
+    text-shadow:none !important;
+}
+
+.navbar {
     padding-bottom:15px;
 }

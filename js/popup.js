@@ -6,8 +6,12 @@ var base_url = "http://localhost:5000/" // global website base, set to localhost
     Call the login page with a get request. If the user has a username and a password, post request using post_login with the data of the page recieved
 */
 function get_login() {
-    var username = $('#id_username').val(),
-    password = $('#id_password').val();
+    $('#errors').fadeOut();
+
+    var username = $('#id_username').val() 
+    username = username ? username : user.get('username');
+    var password = $('#id_password').val()
+    password =  password ? password : user.get('password');
     if (username === '' || password === '') {
         displayErrors("Enter a username and a password")
     } else {
@@ -20,7 +24,6 @@ function get_login() {
 /*
     Call the login url with the user's username and password. Upon success get commprods. If failure display error
 */
-var x
 function post_login(data, username, password) {
     var REGEX = /name\=['"]csrfmiddlewaretoken['"] value\=['"].*['"]/; //regex to find the csrf token
     var match = data.match(REGEX);
@@ -28,7 +31,6 @@ function post_login(data, username, password) {
         match = match[0]
         var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length-1); // grab the csrf token
         //now call the server and login
-        debugger
         $.ajax({
             url: url_login(),
             type: "POST",
@@ -43,9 +45,9 @@ function post_login(data, username, password) {
                 var match = data.match(REGEX)
                 if(match) { // we didn't log in successfully
                     displayErrors("Invalid username or password");
-
-                    get_login();
                 } else {
+                    addUserInfo(username, password);
+                    hideLogin();
                     fetchProds();
                 }
             }
@@ -62,21 +64,69 @@ function post_login(data, username, password) {
 */
 function logout() { 
     $.get(url_logout());
+    rmUserInfo();
 }
 
+/*
+    Store the username and password in global state
+*/
+function addUserInfo(username, password) {
+    user.setUsername(username);
+    user.setPassword(password);
+}
+/*
+    Clear user state
+*/
+function rmUserInfo() {
+    addUserInfo('', '');
+}
 
+/*
+    Attempts to log the user in if data has been stored.
+    Adds events listeners for login button/key press for future use
+*/
+function setLoginListener() {
+    $('#errors').hide();
+    $('.commprod-timeline-container').hide();
+    $('#id_username').focus();
+    if (user.get('validInfo')){
+        get_login();
+    }
+    $('#login').click(get_login);
+    $('input').keypress(function (e) {
+        if (e.which == 13) { // listen for enter event
+            e.preventDefault();
+            get_login()
+        }
+    });
+
+}
+
+function hideLogin() { 
+    $('#login_container').hide()
+}
+
+/*
+    Query for unread recent commprods
+*/
 function fetchProds() {
-    console.log('here')
+    $('.commprod-timeline-container').fadeIn();
+    $.get(url_search(), function(data) {
+        var $prod_container = $('.commprod-timeline');
+        $prod_container.html("");
+        $.each(data, function(index, html) { 
+            $prod_container.append(html)
+        });
+    })
 }
 
 /*
     Show any errors from the login process.
-
 */
 function displayErrors(errorMsg) {
     $errorDiv = $('#errors');
     $errorDiv.html(errorMsg);
-    $errorDiv.removeClass('hidden');
+    $errorDiv.fadeIn();
 }
 
 
@@ -92,20 +142,18 @@ function url_logout() {
 function url_search(unvoted, limit, orderBy) { 
     var unvoted = unvoted || true;
     var limit = limit || 15;
-    var orderBy = orderBy || 'date';
+    var orderBy = orderBy || '-date';
     var return_type = "list";
 
-    return base_url +  sprintf("/commprod/api/search?unvoted=%s&limit=%orderBy=%s&return_type=%s", unvoted, limit, orderBy, return_type)
+    return base_url +  sprintf("commprod/api/search?unvoted=%s&limit=%s&orderBy=%s&return_type=%s", unvoted, limit, orderBy, return_type)
 }
 ////////////////////////////////////////////////////
 
 
 $(document).ready(function() {
-    $('#login').click(get_login);
-    $('.input').keypress(function (e) {
-        if (e.which == 13) { // listen for enter event
-            get_login()
-        }
-        e.preventDefault();
-    });
+    window.backpage = chrome.extension.getBackgroundPage(); //get the background page for state
+    user = backpage.user;
+    console.log(user)
+    setLoginListener();
+    console.log(user)
 });

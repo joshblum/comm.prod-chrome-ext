@@ -12,23 +12,46 @@
         <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="css/bootstrap-responsive.css" />
         <link type="text/css" rel="stylesheet" href="css/popup.css" />
+        <link type="text/css" rel="stylesheet" href="http://burtonthird.com/public/css/base.css" />
+        <link type="text/css" rel="stylesheet" href="http://burtonthird.com/public/css/home.css" />
     </head>
   
     <body>
-        <div class="container offset2 span4">
-            <div id="errors" class="hidden alert alert-error">
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner nav_bg">
+                <a class="brand" href="http://burtonthird.com">
+                    a <img class="logo" src="http://burtonthird.com/public/img/btb-logo.png"/> comm.prod
+                </a>
             </div>
-            <input id="id_username" type="text" name="username" maxlength="30" placeholder="Username or Email">
-            <input type="password" name="password" id="id_password" placeholder="Password">
-            <input class="btn btn-warning" id="login" type="submit" value="Login" data-loading-text="Loading..."/> 
-            <a href="http://burtonthird.com/reset_password">
-                Forgot password? 
-            </a>
+        </div>
+        <div class="container ">
+            <div id="login_container" class="offset2 span4">
+                <div id="errors" class="alert alert-error">
+                </div>
+                <input id="id_username" type="text" name="username" maxlength="30" placeholder="Username or Email">
+                <input type="password" name="password" id="id_password" placeholder="Password">
+                <input class="btn btn-warning" id="login" type="submit" value="Login" data-loading-text="Loading..."/> 
+                <a href="http://burtonthird.com/reset_password">
+                    Forgot password? 
+                </a>
+            </div> 
+
+            <div class="commprod-timeline-container">
+                <div class="commprod-timeline well">
+                    <div class="loading-container">
+                        <img class="loading" src='http://burtonthird.com/public/img/loading.gif'/>
+                    </div> 
+                </div>
+            </div>
+
         </div>
         
         <!--  javascript -->
         <script type="text/javascript" src="libs/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="libs/bootstrap.js"></script>
         <script type="text/javascript" src="libs/sprintf-0.7-beta1.js"></script>
         <script type="text/javascript" src="js/popup.js"></script>
+        <!--<script type="text/javascript" src="/public/js/base.js"></script>
+        <script type="text/javascript" src="/public/js/commprod/home.js"></script> -->
     </body>
 </html>
