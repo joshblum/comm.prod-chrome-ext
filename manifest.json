@@ -1,0 +1,21 @@
+{
+    "manifest_version": 2,
+    "name" : "comm.prod",
+    "version" : "1.0",
+    "description" : "Get current comm.prods in your browser.",
+    "browser_action" : {
+        "default_icon" : "img/bomb.png",
+        "default_popup" : "popup.html",
+        "default_title" : "comm.prod"
+    },
+    "permissions": [
+        "http://burtonthird.com/.*",
+        "http://localhost:5000/.*",
+        "cookies",
+        "notifications",
+        "background"
+    ],
+    "background" : {
+            "page": "background.html"
+        }
+}
