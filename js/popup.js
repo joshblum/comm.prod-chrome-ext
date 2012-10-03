@@ -9,10 +9,10 @@ function get_login() {
     var username = $('#id_username').val(),
     password = $('#id_password').val();
     if (username === '' || password === '') {
-        displayError("Enter a username and a password")
+        displayErrors("Enter a username and a password")
     } else {
-        $.get(login_url(), function(data, username, password) {
-            post_login(data);
+        $.get(url_login(), function(data) {
+            post_login(data, username, password);
         });
     }
 }
@@ -20,14 +20,17 @@ function get_login() {
 /*
     Call the login url with the user's username and password. Upon success get commprods. If failure display error
 */
+var x
 function post_login(data, username, password) {
     var REGEX = /name\=['"]csrfmiddlewaretoken['"] value\=['"].*['"]/; //regex to find the csrf token
     var match = data.match(REGEX);
     if (match)  {
-        var csrfmiddlewaretoken = match[0].slice(match.indexOf("value=") + 7, match.length-1); // grab the csrf token
+        match = match[0]
+        var csrfmiddlewaretoken = match.slice(match.indexOf("value=") + 7, match.length-1); // grab the csrf token
         //now call the server and login
+        debugger
         $.ajax({
-            url: login_url(),
+            url: url_login(),
             type: "POST",
             data: {
                     "username": username,
@@ -39,16 +42,17 @@ function post_login(data, username, password) {
             success: function(data) {
                 var match = data.match(REGEX)
                 if(match) { // we didn't log in successfully
-                    displayError("Invalid username or password")
-                    get_prods();
-                } else {
+                    displayErrors("Invalid username or password");
+
                     get_login();
+                } else {
+                    fetchProds();
                 }
             }
         });
     }
     else {
-        get_prods(); // we didn't match the regex so the user is already logged in, lets get them comm.prods
+        fetchProds(); // we didn't match the regex so the user is already logged in, lets get them comm.prods
     }
     
 }
@@ -57,7 +61,12 @@ function post_login(data, username, password) {
     Log the user out.
 */
 function logout() { 
-    $.get(logout_url());
+    $.get(url_logout());
+}
+
+
+function fetchProds() {
+    console.log('here')
 }
 
 /*
@@ -67,29 +76,20 @@ function logout() {
 function displayErrors(errorMsg) {
     $errorDiv = $('#errors');
     $errorDiv.html(errorMsg);
-    $errorDiv.show();
-}
-
-/*
-    Hide errors from the login process. 
-*/
-function hideErrors() {
-    $errorDiv = $('#errors');
-    $errorDiv.html(''); // no really necessary 
-    $errorDiv.show();
+    $errorDiv.removeClass('hidden');
 }
 
 
 ///////////////////URL BUILDERS///////////////////
-function login_url() {
+function url_login() {
     return base_url + 'login'
 }
 
-function logout_url() {
+function url_logout() {
     return base_url + 'logout'
 }
 
-function search_url(unvoted, limit, orderBy) { 
+function url_search(unvoted, limit, orderBy) { 
     var unvoted = unvoted || true;
     var limit = limit || 15;
     var orderBy = orderBy || 'date';
@@ -103,9 +103,9 @@ function search_url(unvoted, limit, orderBy) {
 $(document).ready(function() {
     $('#login').click(get_login);
     $('.input').keypress(function (e) {
-        e.preventDefault();
         if (e.which == 13) { // listen for enter event
             get_login()
         }
+        e.preventDefault();
     });
 });
