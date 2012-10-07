@@ -27,7 +27,7 @@
         <!-- BEGIN: Underscore Template Definition. -->
         
         <!-- Nav template -->
-        <script type="text/template" id="nav">
+        <script type="text/template" id="nav_template">
 
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner nav_bg">
@@ -57,29 +57,29 @@
         </script>
 
         <!-- Subnav template -->
-        <script type="text/template" id="subnav">
+        <script type="text/template" id="subnav_template">
 
             <div class="span2 offset1 search-nav">
                 <ul class="nav nav-pills">
-                    <li class="<%= subnav_recent %>">
+                    <li id="recent_tab" class="<%= subnav_recent %>">
                         <div class="recent">
                             <i class="icon-time"></i> 
                             Recent
                         </div>
                     </li>
-                    <li class="<%= subnav_trending %>">
+                    <li id="trending_tab" class="<%= subnav_trending %>">
                         <div class="trending">
                             <i class="icon-signal"></i> 
                             Trending
                         </div>
                     </li>
-                    <li class="<%= subnav_media %>">
+                    <li id="media_tab" class="<%= subnav_media %>">
                         <div class="media">
                             <i class="icon-play "></i> 
                             Media
                         </div>
                     </li>
-                    <li class="<%= subnav_best %>">
+                    <li id="best_tab" class="<%= subnav_best %>">
                         <div class="best">
                             <i class="icon-heart"></i> 
                             Best
@@ -91,7 +91,7 @@
         </script>
 
         <!-- Login template -->
-        <script type="text/template" id="login">
+        <script type="text/template" id="login_template">
 
             <div id="login_container" class="offset2 span4">
                 <div id="errors" class="alert alert-error"></div>
@@ -106,7 +106,7 @@
         </script>
 
         <!-- Timeline template -->
-        <script type="text/template" id="timeline">
+        <script type="text/template" id="timeline_template">
 
             <div class="commprod-timeline-container">
                 <div class="commprod-timeline well">
