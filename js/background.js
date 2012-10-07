@@ -1,7 +1,6 @@
 User = Backbone.Model.extend({
     defaults: {
-        'username' : '',
-        'password' : '',
+        loggedIn : false,
         'updateBadge' : 'always', //default to update badge for every commprod
         'validInfo' : false, 
     },

@@ -1,11 +1,11 @@
-var base_url = "http://localhost:5000/" // global website base, set to localhost for testing
-//var base_url = "http://burtonthird.com/"
+var baseUrl = "http://localhost:5000/" // global website base, set to localhost for testing
+//var baseUrl = "http://burtonthird.com/"
 
 
 /*
-    Call the login page with a get request. If the user has a username and a password, post request using post_login with the data of the page recieved
+    Call the login page with a get request. If the user has a username and a password, post request using postLogin with the data of the page recieved
 */
-function get_login() {
+function getLogin() {
     $('#errors').fadeOut();
 
     var username = $('#id_username').val() 
@@ -16,7 +16,7 @@ function get_login() {
         displayErrors("Enter a username and a password")
     } else {
         $.get(url_login(), function(data) {
-            post_login(data, username, password);
+            postLogin(data, username, password);
         });
     }
 }
@@ -24,7 +24,7 @@ function get_login() {
 /*
     Call the login url with the user's username and password. Upon success get commprods. If failure display error
 */
-function post_login(data, username, password) {
+function postLogin(data, username, password) {
     var REGEX = /name\=['"]csrfmiddlewaretoken['"] value\=['"].*['"]/; //regex to find the csrf token
     var match = data.match(REGEX);
     if (match)  {
@@ -90,13 +90,13 @@ function setLoginListener() {
     $('.commprod-timeline-container').hide();
     $('#id_username').focus();
     if (user.get('validInfo')){
-        get_login();
+        getLogin();
     }
-    $('#login').click(get_login);
+    $('#login').click(getLogin);
     $('input').keypress(function (e) {
         if (e.which == 13) { // listen for enter event
             e.preventDefault();
-            get_login()
+            getLogin()
         }
     });
 
@@ -132,11 +132,11 @@ function displayErrors(errorMsg) {
 
 ///////////////////URL BUILDERS///////////////////
 function url_login() {
-    return base_url + 'login'
+    return baseUrl + 'login'
 }
 
 function url_logout() {
-    return base_url + 'logout'
+    return baseUrl + 'logout'
 }
 
 function url_search(unvoted, limit, orderBy) { 
@@ -145,7 +145,7 @@ function url_search(unvoted, limit, orderBy) {
     var orderBy = orderBy || '-date';
     var return_type = "list";
 
-    return base_url +  sprintf("commprod/api/search?unvoted=%s&limit=%s&orderBy=%s&return_type=%s", unvoted, limit, orderBy, return_type)
+    return baseUrl +  sprintf("commprod/api/search?unvoted=%s&limit=%s&orderBy=%s&return_type=%s", unvoted, limit, orderBy, return_type)
 }
 ////////////////////////////////////////////////////
 
