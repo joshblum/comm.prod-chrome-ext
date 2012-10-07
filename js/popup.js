@@ -1,6 +1,6 @@
 //////////Views ///////////////
 LoginView = Backbone.View.extend({
-    'el' : 'content-container',
+    'el' : $('.content-container'),
 
     initialize : function() {
         this.render();
@@ -13,7 +13,7 @@ LoginView = Backbone.View.extend({
                     'baseUrl' : baseUrl,
                 });
 
-            this.el.html(template);
+            $(this.el).html(template);
         }
     },
 
@@ -39,6 +39,7 @@ LoginView = Backbone.View.extend({
             $.get(url_login(), function(data) {
                 postLogin(data, username, password);
             });
+        }
     },
 
     postLogin : function(data, username, password) {
@@ -97,7 +98,7 @@ LoginView = Backbone.View.extend({
 });
 
 SearchView = Backbone.View.extend({
-    'el' : 'content-container',
+    'el' : $('.content-container'),
 
     render : function() {
         $('.content-container').empty();
@@ -106,7 +107,7 @@ SearchView = Backbone.View.extend({
                 'baseUrl' : baseUrl,
             });
 
-        this.el.html(template);
+        $(this.el).html(template);
 
         var set_name = tab.split('_') + 'set'
         var set = prod_collection[set_name];
@@ -123,11 +124,11 @@ SearchView = Backbone.View.extend({
 });
 
 SubNavView = Backbone.View.extend({
-    'el' : 'subnav-containe',
+    'el' : $('.subnav-container'),
 
     initialize : function(){
         var tab = user.get('tab');
-        this.render();
+        this.render(tab);
     },
 
     render : function(tab) {
@@ -135,30 +136,31 @@ SubNavView = Backbone.View.extend({
         var template = _.template( $("#subnav_template").html(), {
                 'baseUrl' : baseUrl,
             });
-        this.el.html(template);
 
-        user.setTab(tab);
+        $(this.el).html(template);
         $('.subnav-tab').removeClass('active');
         $('#' + tab).addClass('active');
-        searchView = view_collection[tab];
-        searchView.render();
+        if (user.get('loggedIn')) {          
+            searchView = view_collection[tab];
+            searchView.render();
+        }
     },
 });
 
 NavView = Backbone.View.extend({
-    'el' : 'nav-container',
+    'el' : $('.nav-container'),
 
     initialize : function(){
-        this.render();
+        this.render('home_tab');
     },
 
     render : function(tab) {
         $('.nav-container').empty();
-        var template = _.template( $("#nav_template").html(), {
-                'baseUrl' : baseUrl,
+        var template = _.template($("#nav_template").html(), {
+                baseUrl : baseUrl,
             });
 
-        this.el.html(template);
+        $(this.el).html(template);
 
         $('nav-tab').removeClass('active');
         $('#' + tab).addClass('active');
@@ -174,30 +176,24 @@ function url_logout() {
     return baseUrl + 'logout'
 }
 
-function url_search(unvoted, filter, filter_type, limit) { 
-    var unvoted = unvoted || true;
-    var limit = limit || 30;
-    var return_type = "list";
-
-    return baseUrl +  sprintf("commprod/api/search?unvoted=%s&limit=%s&%s=%s&return_type=%s", unvoted, limit, filter, filterType, return_type)
-}
-
 $(document).ready(function() {
     window.backpage = chrome.extension.getBackgroundPage(); //get the background page for state
     user = backpage.user;
-    prod_collection = {
-        'recent_set' : backpage.recent_set;
-        'trending_set' : backpage.trending_set;
-        'media_set' : backpage.media_set;
-        'best_set' : backpage.best_set;
-    }
+    baseUrl = backpage.baseUrl;
     navView =  new NavView();
     subNavView = new SubNavView();
+    loginView = new LoginView();
+    prod_collection = {
+        'recent_set' : backpage.recent_set,
+        'trending_set' : backpage.trending_set,
+        'media_set' : backpage.media_set,
+        'best_set' : backpage.best_set,
+    }
     view_collection = { 
-        'recent_set' : new SearchView();
-        'trending_set' : new SearchView();
-        'media_set' : new SearchView();
-        'best_set' : new SearchView();
+        'recent_set' : new SearchView(),
+        'trending_set' : new SearchView(),
+        'media_set' : new SearchView(),
+        'best_set' : new SearchView(),
     }
     
 });

@@ -3,7 +3,8 @@ var User = Backbone.Model.extend({
     defaults: {
         'loggedIn' : false,
         'updateBadge' : 'always', //default to update badge for every new commprod
-        'tab' : 'recent_tab'
+        'tab' : 'recent_tab',
+        'baseUrl' : '',
     },
 
     setLogin : function(status) {
@@ -32,20 +33,31 @@ var ProdSet = Backbone.Model.extend({
     initialize : function() {
         this.bind("change:renderedProds", this.checkSet);
         this.bind("change:recentId", this.updateSet);
-        updateSet();
+    },
+
+    url_search : function(unvoted, filter, filterType, limit) { 
+        var unvoted = unvoted || true;
+        var limit = limit || 30;
+        var return_type = "list";
+
+        return baseUrl +  sprintf("commprod/api/search?unvoted=%s&limit=%s&%s=%s&return_type=%s", unvoted, limit, filter, filterType, return_type)
     },
 
     checkSet : function() {
-        if (this.renderedProds.length < 10) {
-            updateSet();
+        if (this.get('renderedProds').length < 10) {
+            this.updateSet();
         }
     },
 
     updateSet : function() {
-        var url = url_search(user.get('unvoted'), this.filter, this.filterType)
-        $.get(url_search(), function(data) {
+        var url = this.url_search(user.get('unvoted'), this.filter, this.filterType)
+        var renderedProds = this.get('renderedProds');
+        var cleanProd = this.cleanProd;
+        $.get(url, function(data) {
+            debugger
             $.each(data, function(index, prod) {
-                this.renderedProds.push(this.cleanProd(prod));
+                prod = cleanProd(prod)
+                renderedProds.push(prod);
             });
         });
     },
@@ -53,19 +65,20 @@ var ProdSet = Backbone.Model.extend({
     cleanProd : function(prod) {
         var $prod = $(prod);
         $("a[href]").each(function() {
-            if (!this.href.contains('www')){
+            if (this.href.indexof('www') == -1){
                 this.href = baseUrl + this.href;
-            });
-        }
+            }
+        });
+        return prod
+    },
 });
-
 
 ///////////Global vars/////////////
 var baseUrl = "http://localhost:5000/" // global website base, set to localhost for testing
 //var baseUrl = "http://burtonthird.com/"
 
 /////////init models///////
-var user = new User();
+var user = new User({'baseUrl' : baseUrl});
 
 var recent_set = new ProdSet({ 
     filter : "-date", 
