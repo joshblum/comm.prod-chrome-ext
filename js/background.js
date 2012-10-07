@@ -40,7 +40,7 @@ var ProdSet = Backbone.Model.extend({
         var limit = limit || 30;
         var return_type = "list";
 
-        return baseUrl +  sprintf("/commprod/api/search?unvoted=%s&limit=%s&%s=%s&return_type=%s", unvoted, limit, filter, filterType, return_type)
+        return baseUrl +  sprintf("/commprod/api/search?unvoted=%s&limit=%s&%s=%s&return_type=%s", unvoted, limit, filterType, filter, return_type)
     },
 
     checkSet : function(callback) {
@@ -56,11 +56,13 @@ var ProdSet = Backbone.Model.extend({
         var renderedProds = this.get('renderedProds');
         var cleanProd = this.cleanProd;
         $.get(url, function(data) {
-            $.each(data, function(index, prod) {
-                //prod = cleanProd(prod)
+            $.each(data.res, function(index, prod) {
+                prod = cleanProd(String(prod));
                 renderedProds.push(prod);
+                if (index == data.res.length-1){
+                    callback();
+                }
             });
-            callback()
         });
     },
 

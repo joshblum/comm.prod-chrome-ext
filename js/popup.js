@@ -122,7 +122,8 @@ SearchView = Backbone.View.extend({
         set.checkSet(function() {
             $container = $(".commprod-timeline");
             $container.empty();
-            $.each(set.get('renderedProds')[0], function (index, item) {
+            $.each(set.get('renderedProds'), function (index, item) {
+                set.cleanProd(item);
                 $container.append(item);
             });
         })
@@ -162,7 +163,7 @@ NavView = Backbone.View.extend({
     'el' : $('.nav-container'),
 
     initialize : function(){
-        this.render();
+        this.render('home_tab');
         $('.brand').blur()
     },
 
