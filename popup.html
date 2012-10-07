@@ -35,20 +35,19 @@
                     a <img class="logo" src="<%= baseURL %>public/img/btb-logo.png"/> comm.prod
                 </a>
                 <ul class="nav topbar">
-                    <li class="<%= nav_blog %>">
+                    <li>
                         <a href="http://blog.burtonthird.com">Blog</a>
                     </li>
-                    <li class="<%= nav_commprod %>">
-                        <a href="/">comm.prod</a>
+                    <li id="home_tab" class="nav-tab">
+                        <a href="#home">comm.prod</a>
                     </li>
-
-                    <li class="<%= nav_donate %>">
+                    <li>
                          <a href="<%= baseURL %>/donations/donate">Donate</a>
                     </li>
-                    <li class="<%= nav_settings %>">
+                    <li id="settings_tab" class="nav-tab">
                         <a href="#settings">Settings</a>
                     </li>
-                    <li class="<%= nav_logout %>">
+                    <li>
                         <a href="#logout">Logout</a>
                     </li>
             </div>
@@ -61,25 +60,25 @@
 
             <div class="span2 offset1 search-nav">
                 <ul class="nav nav-pills">
-                    <li id="recent_tab" class="<%= subnav_recent %>">
+                    <li id="recent_tab" class="subnav-tab">
                         <div class="recent">
                             <i class="icon-time"></i> 
                             Recent
                         </div>
                     </li>
-                    <li id="trending_tab" class="<%= subnav_trending %>">
+                    <li id="trending_tab" class="subnav-tab">
                         <div class="trending">
                             <i class="icon-signal"></i> 
                             Trending
                         </div>
                     </li>
-                    <li id="media_tab" class="<%= subnav_media %>">
+                    <li id="media_tab" class="subnav-tab">
                         <div class="media">
                             <i class="icon-play "></i> 
                             Media
                         </div>
                     </li>
-                    <li id="best_tab" class="<%= subnav_best %>">
+                    <li id="best_tab" class="subnav-tab">
                         <div class="best">
                             <i class="icon-heart"></i> 
                             Best

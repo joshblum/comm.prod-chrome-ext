@@ -99,17 +99,15 @@ LoginView = Backbone.View.extend({
 SearchView = Backbone.View.extend({
     'el' : 'content-container',
 
-    initialize : function(){
-        var tab = user.get('tab')
-        this.render(tab);
-    },
-
-    render : function(tab){
+    render : function() {
         $('.content-container').empty();
+        var tab = user.get('tab');
         var template = _.template( $("#timeline_template").html(), {
                 'baseUrl' : baseUrl,
             });
+
         this.el.html(template);
+
         var set_name = tab.split('_') + 'set'
         var set = prod_collection[set_name];
         $container = $(".commprod-timeline");
@@ -119,9 +117,52 @@ SearchView = Backbone.View.extend({
         });
     },
 
-    vote : function(event){
+    vote : function(event) {
 
     }
+});
+
+SubNavView = Backbone.View.extend({
+    'el' : 'subnav-containe',
+
+    initialize : function(){
+        var tab = user.get('tab');
+        this.render();
+    },
+
+    render : function(tab) {
+        $('.subnav-container').empty();
+        var template = _.template( $("#subnav_template").html(), {
+                'baseUrl' : baseUrl,
+            });
+        this.el.html(template);
+
+        user.setTab(tab);
+        $('.subnav-tab').removeClass('active');
+        $('#' + tab).addClass('active');
+        searchView = view_collection[tab];
+        searchView.render();
+    },
+});
+
+NavView = Backbone.View.extend({
+    'el' : 'nav-container',
+
+    initialize : function(){
+        this.render();
+    },
+
+    render : function(tab) {
+        $('.nav-container').empty();
+        var template = _.template( $("#nav_template").html(), {
+                'baseUrl' : baseUrl,
+            });
+
+        this.el.html(template);
+
+        $('nav-tab').removeClass('active');
+        $('#' + tab).addClass('active');
+    },
 });
 
 ///////////////////URL BUILDERS///////////////////
@@ -141,8 +182,6 @@ function url_search(unvoted, filter, filter_type, limit) {
     return baseUrl +  sprintf("commprod/api/search?unvoted=%s&limit=%s&%s=%s&return_type=%s", unvoted, limit, filter, filterType, return_type)
 }
 
-
-
 $(document).ready(function() {
     window.backpage = chrome.extension.getBackgroundPage(); //get the background page for state
     user = backpage.user;
@@ -151,6 +190,14 @@ $(document).ready(function() {
         'trending_set' : backpage.trending_set;
         'media_set' : backpage.media_set;
         'best_set' : backpage.best_set;
+    }
+    navView =  new NavView();
+    subNavView = new SubNavView();
+    view_collection = { 
+        'recent_set' : new SearchView();
+        'trending_set' : new SearchView();
+        'media_set' : new SearchView();
+        'best_set' : new SearchView();
     }
     
 });

@@ -6,11 +6,17 @@ var User = Backbone.Model.extend({
         'tab' : 'recent_tab'
     },
 
-    setLogin : function(status){
+    setLogin : function(status) {
         this.set({ 
-            loggedIn: status 
+            'loggedIn': status,
         });
     },
+
+    setTab : function(tab) {
+        this.set({ 
+            'tab': tab, 
+        });
+    }
 });
 
 var ProdSet = Backbone.Model.extend({
