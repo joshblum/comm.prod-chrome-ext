@@ -1,17 +1,10 @@
-var baseUrl = "http://localhost:5000/" // global website base, set to localhost for testing
-//var baseUrl = "http://burtonthird.com/"
-
-
 /*
     Call the login page with a get request. If the user has a username and a password, post request using postLogin with the data of the page recieved
 */
 function getLogin() {
     $('#errors').fadeOut();
-
-    var username = $('#id_username').val() 
-    username = username ? username : user.get('username');
-    var password = $('#id_password').val()
-    password =  password ? password : user.get('password');
+    var username = $('#id_username').val();
+    var password = $('#id_password').val();
     if (username === '' || password === '') {
         displayErrors("Enter a username and a password")
     } else {
@@ -46,7 +39,6 @@ function postLogin(data, username, password) {
                 if(match) { // we didn't log in successfully
                     displayErrors("Invalid username or password");
                 } else {
-                    addUserInfo(username, password);
                     hideLogin();
                     fetchProds();
                 }
@@ -64,21 +56,7 @@ function postLogin(data, username, password) {
 */
 function logout() { 
     $.get(url_logout());
-    rmUserInfo();
-}
-
-/*
-    Store the username and password in global state
-*/
-function addUserInfo(username, password) {
-    user.setUsername(username);
-    user.setPassword(password);
-}
-/*
-    Clear user state
-*/
-function rmUserInfo() {
-    addUserInfo('', '');
+    user.setLogin(false);
 }
 
 /*
@@ -86,38 +64,24 @@ function rmUserInfo() {
     Adds events listeners for login button/key press for future use
 */
 function setLoginListener() {
-    $('#errors').hide();
-    $('.commprod-timeline-container').hide();
-    $('#id_username').focus();
-    if (user.get('validInfo')){
-        getLogin();
+    if (user.get('loggedIn')){
+        
     }
-    $('#login').click(getLogin);
-    $('input').keypress(function (e) {
-        if (e.which == 13) { // listen for enter event
-            e.preventDefault();
-            getLogin()
-        }
-    });
+    else {
+        $('#login').click(getLogin);
+        $('input').keypress(function (e) {
+            if (e.which == 13) { // listen for enter event
+                e.preventDefault();
+                getLogin()
+            }
+        });        
+    }
+
 
 }
 
 function hideLogin() { 
     $('#login_container').hide()
-}
-
-/*
-    Query for unread recent commprods
-*/
-function fetchProds() {
-    $('.commprod-timeline-container').fadeIn();
-    $.get(url_search(), function(data) {
-        var $prod_container = $('.commprod-timeline');
-        $prod_container.html("");
-        $.each(data, function(index, html) { 
-            $prod_container.append(html)
-        });
-    })
 }
 
 /*
@@ -139,13 +103,13 @@ function url_logout() {
     return baseUrl + 'logout'
 }
 
-function url_search(unvoted, limit, orderBy) { 
+function url_search(unvoted, filter, filter_type, limit) { 
     var unvoted = unvoted || true;
     var limit = limit || 15;
-    var orderBy = orderBy || '-date';
+
     var return_type = "list";
 
-    return baseUrl +  sprintf("commprod/api/search?unvoted=%s&limit=%s&orderBy=%s&return_type=%s", unvoted, limit, orderBy, return_type)
+    return baseUrl +  sprintf("commprod/api/search?unvoted=%s&limit=%s&%s=%s&return_type=%s", unvoted, limit, filter, filterType, return_type)
 }
 ////////////////////////////////////////////////////
 
@@ -153,7 +117,5 @@ function url_search(unvoted, limit, orderBy) {
 $(document).ready(function() {
     window.backpage = chrome.extension.getBackgroundPage(); //get the background page for state
     user = backpage.user;
-    console.log(user)
     setLoginListener();
-    console.log(user)
 });
