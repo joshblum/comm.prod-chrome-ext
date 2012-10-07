@@ -14,6 +14,7 @@
         <link type="text/css" rel="stylesheet" href="css/popup.css" />
         <link type="text/css" rel="stylesheet" href="http://burtonthird.com/public/css/base.css" />
         <link type="text/css" rel="stylesheet" href="http://burtonthird.com/public/css/home.css" />
+        <link type="text/css" rel="stylesheet" href="http://burtonthird.com/public/css/login.css" />
     </head>
   
     <body>
@@ -21,7 +22,7 @@
 
         <div class="container">
             <div class="subnav-container"></div>
-            <div class="content-content"></div>
+            <div class="content-container"></div>
         </div>
         
         <!-- BEGIN: Underscore Template Definition. -->
@@ -32,24 +33,30 @@
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner nav_bg">
                 <a class="brand" href=" <%= baseUrl %>">
-                    a <img class="logo" src="<%= baseUrl %>public/img/btb-logo.png"/> comm.prod
+                    a <img class="logo" src="<%= baseUrl %>/public/img/btb-logo.png"/> comm.prod
                 </a>
                 <ul class="nav topbar">
                     <li>
                         <a href="http://blog.burtonthird.com">Blog</a>
                     </li>
-                    <li id="home_tab" class="nav-tab">
-                        <a href="#home">comm.prod</a>
-                    </li>
-                    <li>
-                         <a href="<%= baseUrl %>/donations/donate">Donate</a>
-                    </li>
-                    <li id="settings_tab" class="nav-tab">
-                        <a href="#settings">Settings</a>
-                    </li>
-                    <li>
-                        <a href="#logout">Logout</a>
-                    </li>
+                    <% if( loggedIn ) { %>
+                        <li id="home_tab" class="nav-tab">
+                            <a href="#home">comm.prod</a>
+                        </li>
+                        <li>
+                             <a href="<%= baseUrl %>/donations/donate">Donate</a>
+                        </li>
+                        <li id="settings_tab" class="nav-tab">
+                            <a href="#settings">Settings</a>
+                        </li>
+                        <li>
+                            <a href="#logout">Logout</a>
+                        </li>
+                    <%} else {%>
+                        <li id="login_tab" class="nav-tab">
+                            <a href="#login">Login</a>
+                        </li>
+                    <% } %>
             </div>
         </div>
 
@@ -92,15 +99,22 @@
         <!-- Login template -->
         <script type="text/template" id="login_template">
 
-            <div id="login_container" class="offset2 span4">
-                <div id="errors" class="alert alert-error"></div>
-                <input id="id_username" type="text" name="username" maxlength="30" placeholder="Username or Email">
-                <input type="password" name="password" id="id_password" placeholder="Password">
-                <input class="btn btn-warning" id="login" type="submit" value="Login" data-loading-text="Loading..."/> 
-                <a href="<%= baseUrl %>reset_password">
-                    Forgot password? 
-                </a>
-            </div> 
+             <div class="row">
+                <div id="login_container" class="offset2 span4 well">
+                    <div id="errors" class="alert alert-error"></div>
+                    <p>
+                        <input id="id_username" type="text" placeholder="Username or Email" name="username" maxlength="30" />
+                    </p>
+                    <p>
+                        <input type="password" placeholder="Password" name="password" id="id_password" />
+                    </p>
+
+                    <input class="btn btn-warning" data-loading-text="Loading..." id="login" type="submit" value="Login" />
+                    <a href="/reset_password"> Forgot Password? </a> 
+
+                    <input type="hidden" name="next" value="" />
+                </div>
+            </div>
 
         </script>
 
