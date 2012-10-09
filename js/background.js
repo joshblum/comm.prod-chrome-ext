@@ -4,7 +4,10 @@ var User = Backbone.Model.extend({
         'loggedIn' : false,
         'updateBadge' : 'always', //default to update badge for every new commprod
         'tab' : 'recent_tab',
-        'baseUrl' : '',
+    },
+
+    isLoggedIn function() {
+        return this.get('loggedIn')
     },
 
     setLogin : function(status) {
@@ -82,7 +85,7 @@ var baseUrl = "http://localhost:5000" // global website base, set to localhost f
 //var baseUrl = "http://burtonthird.com"
 
 /////////init models///////
-var user = new User({'baseUrl' : baseUrl});
+var user = new User();
 
 var recent_set = new ProdSet({ 
     filter : "-date", 

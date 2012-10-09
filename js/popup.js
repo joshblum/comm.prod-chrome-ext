@@ -8,7 +8,7 @@ LoginView = Backbone.View.extend({
     },
 
     render : function() {
-        if (!user.get('loggedIn')) {
+        if (!user.isLoggedIn()) {
             $('.content-container').empty();
             $('body').css('width', '300px');
             var template = _.template($("#login_template").html(), {
@@ -143,7 +143,7 @@ SubNavView = Backbone.View.extend({
 
     render : function() {
         var tab = user.get('tab')
-        if (user.get('loggedIn')) {
+        if (user.isLoggedIn()) {
             $('.subnav-container').empty();
             var template = _.template( $("#subnav_template").html(), {
                     'baseUrl' : baseUrl,
@@ -169,7 +169,7 @@ NavView = Backbone.View.extend({
 
     render : function(tab) {
         $('.nav-container').empty();
-        var loggedIn = user.get('loggedIn');
+        var loggedIn = user.isLoggedIn();
         var template = _.template($("#nav_template").html(), {
                 baseUrl : baseUrl,
                 loggedIn : loggedIn,
