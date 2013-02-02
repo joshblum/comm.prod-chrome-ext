@@ -114,15 +114,17 @@ LoginView = Backbone.View.extend({
 SearchView = Backbone.View.extend({
     'el' : $('.content-container'),
 
-    render : function() {
+    render : function(loading) {
+        loading = loading || false;
         $('.content-container').empty();
-        var tab = user.getTab();
         var template = _.template( $("#timeline_template").html(), {
                 'baseUrl' : baseUrl,
             });
 
         $(this.el).html(template);
-
+        if (loading) {
+            return
+        }
         var set_name = getSetName();
         var set = prod_collection[set_name];
         set.checkSet(function() {
@@ -133,6 +135,7 @@ SearchView = Backbone.View.extend({
             });
         })
     },
+
 });
 
 SubNavView = Backbone.View.extend({
@@ -148,6 +151,7 @@ SubNavView = Backbone.View.extend({
             this.destroy();
             var template = _.template( $("#subnav_template").html(), {
                     'baseUrl' : baseUrl,
+                    'unvoted' : user.getUnvotedClass(),
                 });
 
             $(this.el).html(template);
@@ -196,11 +200,51 @@ function clickHandle(e) {
         loginView.logout();
     } else if (url.indexOf("http") !== -1){
         backpage.openLink(url);
+    }else if (url.indexOf("login") !== -1){
+        return
     } else {
         url = url.split('#')[1];
         user.setTab(url);
         subNavView.render();
     }
+}
+
+function getSetName() { 
+    var tab = user.getTab();
+    return tab.split('_')[0] + '_set'
+}
+
+function getCurrentSet() {
+    return prod_collection[getSetName()]
+}
+
+function getCurrentView() {
+    return view_collection[user.getTab()]
+}
+
+function updateCurrentSet() {
+    var set = getCurrentSet();
+    set.updateSet();
+}
+
+function unvotedHandle(e) {
+    getCurrentView().render(true); //render loading view
+   
+    var $target = $(e.target);
+    $target.toggleClass("active");
+    
+    if ($target.hasClass('active')) {
+        user.setUnvoted(true);
+    } else {
+        user.setUnvoted(false);
+    }
+    $.each(prod_collection, function(key, set){
+        set.updateSet(function() {
+            if (set.getTab() === user.getTab()){
+                getCurrentView().render();
+            }
+        });
+    });
 }
 
 ///////////////////URL BUILDERS///////////////////
@@ -212,17 +256,6 @@ function url_logout() {
     return baseUrl + '/logout'
 }
 
-function getSetName() { 
-    var tab = user.getTab();
-    return tab.split('_')[0] + '_set'
-}
-
-function updateSet() {
-    var set = prod_collection[getSetName()]
-    set.updateSet();
-}
-
-
 /*
 Ajax CSRF protection
 */
@@ -230,6 +263,7 @@ function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
+
 function sameOrigin(url) {
     // test that a given url is a same-origin URL
     // url could be relative or scheme relative or absolute
@@ -246,7 +280,7 @@ function sameOrigin(url) {
 
 $(document).ready(function() {
     
-    $(document).on('voteSent', updateSet);
+    $(document).on('voteSent', updateCurrentSet);
 
     window.backpage = chrome.extension.getBackgroundPage(); //get the background page for state
     user = backpage.user;
@@ -257,6 +291,12 @@ $(document).ready(function() {
         }, function(cookie){
             csrftoken = cookie.value;
     });
+
+    $(document).on('click', '.vote-container .vote', voteSelection);
+
+    $(document).on('click', 'a', clickHandle);
+
+    $(document).on('click', '#unvoted-btn', unvotedHandle);
     
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
@@ -274,16 +314,18 @@ $(document).ready(function() {
         'trending_set' : backpage.trending_set,
         'media_set' : backpage.media_set,
         'best_set' : backpage.best_set,
+        'worst_set' : backpage.worst_set,
     }
+
     view_collection = { 
         'recent_tab' : new SearchView(),
         'trending_tab' : new SearchView(),
         'media_tab' : new SearchView(),
         'best_tab' : new SearchView(),
+        'worst_tab' : new SearchView(),
     }
     navView =  new NavView();
     subNavView = new SubNavView();
     loginView = new LoginView();
 
-    $('a').click(clickHandle);
 });

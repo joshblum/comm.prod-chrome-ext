@@ -23,19 +23,6 @@
         <div class="container">
             <div class="subnav-container"></div>
             <div class="content-container"></div>
-            <div class="modal fade hide" id="claim-email-modal" data-email="">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h3>Are you sure you want to claim <span class="replace-email"></span>?</h3>
-              </div>
-              <div class="modal-body">
-                <p>We'll send an email to <span class="replace-email"></span> to confirm you are the owner of that email.</p>
-              </div>
-              <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-                <a id="email-claim-confirm" class="btn btn-primary">Yes!</a>
-              </div>
-            </div>
         </div>
         
         <!-- BEGIN: Underscore Template Definition. -->
@@ -54,13 +41,10 @@
                     </li>
                     <% if( loggedIn ) { %>
                         <li id="home_tab" class="nav-tab">
-                            <a href="#home">comm.prod</a>
+                            <a href="<%= baseUrl %>">comm.prod</a>
                         </li>
                         <li>
                              <a href="<%= baseUrl %>/donations/donate">Donate</a>
-                        </li>
-                        <li id="settings_tab" class="nav-tab">
-                            <a href="#settings">Settings</a>
                         </li>
                         <li>
                             <a href="#logout">Logout</a>
@@ -104,13 +88,17 @@
                             Best
                         </a>
                     </li>
-                    <li id="worst_Tab" class="subnav-tab">
-                        <a class="best" href="#worst_Tab">
+                    <li id="worst_tab" class="subnav-tab">
+                        <a class="best" href="#worst_tab">
                             <i class="icon-remove"></i> 
                             Worst
                         </a>
                     </li>
                 </ul>
+
+                <div class="btn-group" data-toggle="buttons-radio">
+                    <button id="unvoted-btn" class="btn <%= unvoted %>">unvoted</button>
+                </div>
             </div>
 
         </script>

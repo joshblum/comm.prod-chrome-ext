@@ -5,6 +5,7 @@ var User = Backbone.Model.extend({
         'updateBadge' : 'always', //default to update badge for every new commprod
         'tab' : 'recent_tab',
         'username' : '',
+        'unvoted' : true,
     },
 
     initialize : function() {
@@ -18,6 +19,18 @@ var User = Backbone.Model.extend({
 
     getTab : function() {
         return this.get('tab')
+    },
+
+    getUnvoted : function() {
+        return this.get('unvoted')
+    },
+
+    getUnvotedClass : function() {
+        var map = {
+            'true' : 'active',
+            'false' : '',
+        }
+        return map[this.getUnvoted()]
     },
 
     isLoggedIn : function() {
@@ -61,6 +74,12 @@ var User = Backbone.Model.extend({
         });
     },
 
+    setUnvoted : function(unvoted) {
+        this.set({
+            'unvoted' : unvoted,
+        });
+    },
+
     //save the current state to local storage
     saveState : function(){
         localStorage.user = JSON.stringify(this);
@@ -77,11 +96,18 @@ var ProdSet = Backbone.Model.extend({
         'tab' : ''
     },
 
+    getTab : function() {
+        return this.get('tab')
+    },
+
     url_search : function(filter, filterType, limit) { 
         var limit = limit || 30;
         var return_type = "list";
-
-        return baseUrl +  sprintf("/commprod/api/search?limit=%s&%s=%s&return_type=%s", limit, filterType, filter, return_type)
+        var unvoted = '';
+        if (user.getUnvoted()) {
+            unvoted = '&unvoted=true';
+        }
+        return baseUrl +  sprintf("/commprod/api/search?limit=%s&%s=%s&return_type=%s%s", limit, filterType, filter, return_type, unvoted)
     },
 
     checkSet : function(callback) {
@@ -113,6 +139,10 @@ var ProdSet = Backbone.Model.extend({
         this.set({
             'renderedProds' : renderedProds
         })
+    },
+
+    clearProds : function() {
+        this.addProds([]);
     },
 
     cleanProd : function(prod) {
@@ -218,4 +248,10 @@ var best_set = new ProdSet({
     filter : "best", 
     filterType : "type",
     tab : 'best_tab',
+});
+
+var worst_set = new ProdSet({ 
+    filter : "worst", 
+    filterType : "type",
+    tab : 'worst_tab',
 });
