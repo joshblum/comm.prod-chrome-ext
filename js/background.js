@@ -77,12 +77,11 @@ var ProdSet = Backbone.Model.extend({
         'tab' : ''
     },
 
-    url_search : function(filter, filterType, unvoted, limit) { 
-        var unvoted = unvoted || false;
+    url_search : function(filter, filterType, limit) { 
         var limit = limit || 30;
         var return_type = "list";
 
-        return baseUrl +  sprintf("/commprod/api/search?unvoted=%s&limit=%s&%s=%s&return_type=%s", unvoted, limit, filterType, filter, return_type)
+        return baseUrl +  sprintf("/commprod/api/search?limit=%s&%s=%s&return_type=%s", limit, filterType, filter, return_type)
     },
 
     checkSet : function(callback) {
@@ -195,7 +194,7 @@ var baseUrl = "http://localhost:8000" // global website base, set to localhost f
 
 /////////init models///////
 var user = getLocalStorageUser();
-initBadge()
+initBadge();
 
 var recent_set = new ProdSet({ 
     filter : "-date", 

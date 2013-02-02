@@ -23,6 +23,19 @@
         <div class="container">
             <div class="subnav-container"></div>
             <div class="content-container"></div>
+            <div class="modal fade hide" id="claim-email-modal" data-email="">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Are you sure you want to claim <span class="replace-email"></span>?</h3>
+              </div>
+              <div class="modal-body">
+                <p>We'll send an email to <span class="replace-email"></span> to confirm you are the owner of that email.</p>
+              </div>
+              <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+                <a id="email-claim-confirm" class="btn btn-primary">Yes!</a>
+              </div>
+            </div>
         </div>
         
         <!-- BEGIN: Underscore Template Definition. -->
@@ -32,7 +45,7 @@
 
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner nav-bg">
-                <a class="brand" href=" <%= baseUrl %>">
+                <a class="brand" href="<%= baseUrl %>">
                     a <img class="logo" src="img/btb-logo.png"/> comm.prod
                 </a>
                 <ul class="nav topbar">
@@ -74,7 +87,7 @@
                         </a>
                     </li>
                     <li id="trending_tab" class="subnav-tab">
-                        <a class="trending" href="#trending_tab">
+                        <a class="nav-pills trending" href="#trending_tab">
                             <i class="icon-signal"></i> 
                             Trending
                         </a>
@@ -89,6 +102,12 @@
                         <a class="best" href="#best_tab">
                             <i class="icon-heart"></i> 
                             Best
+                        </a>
+                    </li>
+                    <li id="worst_Tab" class="subnav-tab">
+                        <a class="best" href="#worst_Tab">
+                            <i class="icon-remove"></i> 
+                            Worst
                         </a>
                     </li>
                 </ul>
@@ -135,12 +154,13 @@
 
         <!--  javascript -->
         <script type="text/javascript" src="libs/jquery-1.8.2.js"></script>
+         <script type="text/javascript" src="libs/jquery.cookie.js"></script>
         <script type="text/javascript" src="libs/underscore.js"></script>
         <script type="text/javascript" src="libs/backbone.js"></script>
-        <script type="text/javascript" src="libs/bootstrap.js"></script>
+        <script type="text/javascript" src="libs/bootstrap-tooltip.js"></script>
+        <script type="text/javascript" src="libs/bootstrap-popover.js"></script>
         <script type="text/javascript" src="libs/sprintf-0.7-beta1.js"></script>
         <script type="text/javascript" src="js/popup.js"></script>
-        <!--<script type="text/javascript" src="/public/js/base.js"></script>
-        <script type="text/javascript" src="/public/js/commprod/home.js"></script> -->
+        <script type="text/javascript" src="js/vote.js"></script>
     </body>
 </html>
