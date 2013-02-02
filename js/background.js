@@ -77,11 +77,6 @@ var ProdSet = Backbone.Model.extend({
         'tab' : ''
     },
 
-    initialize : function() {
-        this.bind("change:renderedProds", this.checkSet);
-        this.bind("change:recentId", this.updateSet);
-    },
-
     url_search : function(filter, filterType, unvoted, limit) { 
         var unvoted = unvoted || false;
         var limit = limit || 30;
@@ -100,17 +95,25 @@ var ProdSet = Backbone.Model.extend({
 
     updateSet : function(callback) {
         var url = this.url_search(this.get('filter'), this.get('filterType'));
-        var renderedProds = this.get('renderedProds');
+        var renderedProds = [];
         var cleanProd = this.cleanProd;
+        var that = this;
         $.get(url, function(data) {
             $.each(data.res, function(index, prod) {
                 prod = cleanProd(String(prod));
                 renderedProds.push(prod);
                 if (index == data.res.length-1){
+                    that.addProds(renderedProds);
                     callback();
                 }
             });
         });
+    },
+
+    addProds : function(renderedProds) {
+        this.set({
+            'renderedProds' : renderedProds
+        })
     },
 
     cleanProd : function(prod) {

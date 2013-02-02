@@ -125,10 +125,6 @@ SearchView = Backbone.View.extend({
 
         var set_name = tab.split('_')[0] + '_set'
         var set = prod_collection[set_name];
-        console.log(set.get('filter'))
-        console.log(set.get('filterType'))
-        console.log(set.get('tab'))
-        console.log(set.get('renderedProds').length)
         set.checkSet(function() {
             $container = $(".commprod-timeline");
             $container.empty();
