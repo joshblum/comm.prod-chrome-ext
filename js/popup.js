@@ -70,31 +70,37 @@ LoginView = Backbone.View.extend({
                     if(match) { // we didn't log in successfully
                         self.displayErrors("Invalid username or password");
                     } else {
-                        self.completeLogin()
+                        self.completeLogin(username)
                     }
                 },
                 error : function(data) {
                     self.displayErrors("Unable to connect, try again later.")
                 }
             });
-        }
-        else {
-            self.completeLogin();
+        } else {
+            self.completeLogin(username);
         }
     },
 
-    completeLogin : function() {
+    completeLogin : function(username) {
         $('#login_container').remove();
         $('body').css('width', '600px');
-        user.setLogin(true);
+
+        user.login();
+        user.setUsername(username);
+        user.saveState();
+
         navView.render('home_tab');
         subNavView.render();
     },
 
     logout : function() {
         $.get(url_logout());
-        user.setLogin(false);
+        user.logout();
+        backpage.clearLocalStorage('user');
         this.render();
+        navView.render();
+        subNavView.destroy();
     },
 
     displayErrors : function(errorMsg) {
@@ -110,7 +116,7 @@ SearchView = Backbone.View.extend({
 
     render : function() {
         $('.content-container').empty();
-        var tab = user.get('tab');
+        var tab = user.getTab();
         var template = _.template( $("#timeline_template").html(), {
                 'baseUrl' : baseUrl,
             });
@@ -119,11 +125,14 @@ SearchView = Backbone.View.extend({
 
         var set_name = tab.split('_')[0] + '_set'
         var set = prod_collection[set_name];
+        console.log(set.get('filter'))
+        console.log(set.get('filterType'))
+        console.log(set.get('tab'))
+        console.log(set.get('renderedProds').length)
         set.checkSet(function() {
             $container = $(".commprod-timeline");
             $container.empty();
             $.each(set.get('renderedProds'), function (index, item) {
-                set.cleanProd(item);
                 $container.append(item);
             });
         })
@@ -142,21 +151,25 @@ SubNavView = Backbone.View.extend({
     },
 
     render : function() {
-        var tab = user.get('tab')
+        var tab = user.getTab();
         if (user.isLoggedIn()) {
-            $('.subnav-container').empty();
+            this.destroy();
             var template = _.template( $("#subnav_template").html(), {
                     'baseUrl' : baseUrl,
                 });
 
             $(this.el).html(template);
             $('.subnav-tab').removeClass('active');
-            $('#' + tab).addClass('active');        
+            $('#' + tab).addClass('active');      
             searchView = view_collection[tab];
             searchView.render();
         }
         
     },
+
+    destroy : function() {
+        $('.subnav-container').empty();
+    }
 });
 
 NavView = Backbone.View.extend({
@@ -183,6 +196,20 @@ NavView = Backbone.View.extend({
         $('#' + tab).addClass('active');
     },
 });
+
+function clickHandle(e) {
+    e.preventDefault();
+    var url = $(e.target).context.href;
+    if (url.indexOf("logout") !== -1) {
+        loginView.logout();
+    } else if (url.indexOf("http") !== -1){
+        backpage.openLink(url);
+    } else {
+        url = url.split('#')[1];
+        user.setTab(url);
+        subNavView.render();
+    }
+}
 
 ///////////////////URL BUILDERS///////////////////
 function url_login() {
@@ -212,4 +239,6 @@ $(document).ready(function() {
     navView =  new NavView();
     subNavView = new SubNavView();
     loginView = new LoginView();
+
+    $('a').click(clickHandle);
 });

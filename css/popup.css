@@ -1,3 +1,7 @@
+html {
+    height:250px !important;
+}
+
 body {
     padding-bottom:15px;
     width:600px;

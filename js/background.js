@@ -4,15 +4,54 @@ var User = Backbone.Model.extend({
         'loggedIn' : false,
         'updateBadge' : 'always', //default to update badge for every new commprod
         'tab' : 'recent_tab',
+        'username' : '',
     },
 
-    isLoggedIn function() {
+    initialize : function() {
+        _.bindAll(this); //allow access to 'this' in callbacks with 'this' meaning the object not the context of the callback
+
+    },
+
+    getUsername : function() {
+        return this.get('username')
+    },
+
+    getTab : function() {
+        return this.get('tab')
+    },
+
+    isLoggedIn : function() {
+        if (this.getUsername() === this.defaults.username) {
+            this.logout();
+        }
         return this.get('loggedIn')
     },
 
+    login : function() {
+        this.setLogin(true);
+    },
+
+    logout : function() {
+        this.setLogin(false);
+    },
+
+    //when the user is logged in set the boolean to give logged in views.
     setLogin : function(status) {
         this.set({ 
             'loggedIn': status,
+        });
+
+        var map = {
+            'true' : 'login',
+            'false' : 'logout'
+        };
+
+        loginBadge(map[status]);
+    },
+    
+    setUsername : function(username) {
+        this.set({ 
+            'username': username,
         });
     },
 
@@ -20,7 +59,12 @@ var User = Backbone.Model.extend({
         this.set({ 
             'tab': tab, 
         });
-    }
+    },
+
+    //save the current state to local storage
+    saveState : function(){
+        localStorage.user = JSON.stringify(this);
+    },
 });
 
 var ProdSet = Backbone.Model.extend({
@@ -38,8 +82,8 @@ var ProdSet = Backbone.Model.extend({
         this.bind("change:recentId", this.updateSet);
     },
 
-    url_search : function(unvoted, filter, filterType, limit) { 
-        var unvoted = unvoted || true;
+    url_search : function(filter, filterType, unvoted, limit) { 
+        var unvoted = unvoted || false;
         var limit = limit || 30;
         var return_type = "list";
 
@@ -55,7 +99,7 @@ var ProdSet = Backbone.Model.extend({
     },
 
     updateSet : function(callback) {
-        var url = this.url_search(user.get('unvoted'), this.get('filter'), this.get('filterType'));
+        var url = this.url_search(this.get('filter'), this.get('filterType'));
         var renderedProds = this.get('renderedProds');
         var cleanProd = this.cleanProd;
         $.get(url, function(data) {
@@ -75,39 +119,101 @@ var ProdSet = Backbone.Model.extend({
         var href_replace = 'href="' + baseUrl + "/";
         var src_replace = 'src="' + baseUrl + "/";
         prod = prod.replace(href_find, href_replace);
-        prod = prod.replace(src_find, href_replace);
+        prod = prod.replace(src_find, src_replace);
         return prod
     },
 });
 
+/*
+    Get and return the user from local storage.
+    If no user is found create a new one.
+    If an old user exists unJSON the object and return it.
+*/
+function getLocalStorageUser() {
+    var storedUser = localStorage.user;
+    if (storedUser === undefined || storedUser === "null") {
+        u = new User();
+        return u
+    }
+
+    o = JSON.parse(storedUser);
+    var u = new User();
+
+    u.setUsername(o.username);
+    u.setLogin(o.loggedIn);
+
+    return u
+}
+
+/*
+    Clear the local storage for the given key
+*/ 
+function clearLocalStorage(key) {
+    localStorage[key] = null;
+}
+
+function updateBadge(text) {
+    chrome.browserAction.setBadgeText(
+        {
+            'text' : text
+        });
+}
+
+function loginBadge(e) {
+    if (e == 'logout') {
+        updateBadge('!');
+    } else if(e == 'login') {
+        updateBadge('');
+    }
+}
+
+function initBadge() {
+    chrome.browserAction.setBadgeBackgroundColor({'color':'#FE7227'});
+    if (!user.isLoggedIn()) {
+        loginBadge('logout');
+    }
+}
+
+/*
+Helper to open urls from the extension to the main website
+*/
+function openLink(url) {
+    chrome.tabs.create({'url': url});
+}
+
+function clearStorage(){
+    localStorage.removeItem('local_history')
+    local_history = []
+}
+
 ///////////Global vars/////////////
-var baseUrl = "http://localhost:5000" // global website base, set to localhost for testing
+var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
 //var baseUrl = "http://burtonthird.com"
 
 /////////init models///////
-var user = new User();
+var user = getLocalStorageUser();
+initBadge()
 
 var recent_set = new ProdSet({ 
     filter : "-date", 
     filterType : "orderBy",
-    tab : 'recent_tab'
+    tab : 'recent_tab',
 });
 
 var trending_set = new ProdSet({ 
     filter : "trending", 
     filterType : "type",
-    tab : 'trending_tab'
+    tab : 'trending_tab',
 });
 
 var media_set = new ProdSet({ 
     filter : "media", 
     filterType : "type",
-    tab : 'media_tab'
+    tab : 'media_tab',
 });
 
 var best_set = new ProdSet({ 
     filter : "best", 
     filterType : "type",
-    tab : 'best_tab'
+    tab : 'best_tab',
 });
-
