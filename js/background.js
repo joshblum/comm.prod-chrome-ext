@@ -25,12 +25,8 @@ var User = Backbone.Model.extend({
         return this.get('unvoted')
     },
 
-    getUnvotedClass : function() {
-        var map = {
-            'true' : 'active',
-            'false' : '',
-        }
-        return map[this.getUnvoted()]
+    getUnvotedState : function() {
+        return !this.getUnvoted() //flip boolean since true=all=!unvoted
     },
 
     isLoggedIn : function() {

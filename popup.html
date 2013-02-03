@@ -11,6 +11,7 @@
         <!--  styles -->
         <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+        <link type="text/css" rel="stylesheet" href="css/bootstrap-switch.css" />
         <link type="text/css" rel="stylesheet" href="css/popup.css" />
         <link type="text/css" rel="stylesheet" href="http://burtonthird.com/public/css/base.css" />
         <link type="text/css" rel="stylesheet" href="http://burtonthird.com/public/css/home.css" />
@@ -24,7 +25,7 @@
             <div class="subnav-container"></div>
             <div class="content-container"></div>
         </div>
-        
+
         <!-- BEGIN: Underscore Template Definition. -->
         
         <!-- Nav template -->
@@ -94,11 +95,10 @@
                             Worst
                         </a>
                     </li>
+                    <div class="switch" data-on="warning" data-off="info" data-on-label="All" data-off-label="Some">
+                        <input type="checkbox">
+                    </div>
                 </ul>
-
-                <div class="btn-group" data-toggle="buttons-radio">
-                    <button id="unvoted-btn" class="btn <%= unvoted %>">unvoted</button>
-                </div>
             </div>
 
         </script>
@@ -142,7 +142,8 @@
 
         <!--  javascript -->
         <script type="text/javascript" src="libs/jquery-1.8.2.js"></script>
-         <script type="text/javascript" src="libs/jquery.cookie.js"></script>
+        <script type="text/javascript" src="libs/jquery.cookie.js"></script>
+        <script type="text/javascript" src="libs/jquery.switch.js"></script>
         <script type="text/javascript" src="libs/underscore.js"></script>
         <script type="text/javascript" src="libs/backbone.js"></script>
         <script type="text/javascript" src="libs/bootstrap-tooltip.js"></script>

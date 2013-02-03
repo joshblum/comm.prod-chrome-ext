@@ -10,3 +10,7 @@ body {
 .navbar {
     padding-bottom:15px;
 }
+
+.switch {
+    margin-top: 3px;
+}

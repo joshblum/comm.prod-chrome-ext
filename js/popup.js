@@ -39,7 +39,7 @@ LoginView = Backbone.View.extend({
         var username = $('#id_username').val();
         var password = $('#id_password').val();
         if (username === '' || password === '') {
-            self.displayErrors("Enter a username and a password")
+            self.displayErrors("Enter a username and a password.")
         } else {
             $.get(url_login(), function(data) {
                 self.postLogin(data, username, password);
@@ -68,7 +68,7 @@ LoginView = Backbone.View.extend({
                 success: function(data) {
                     var match = data.match(REGEX)
                     if(match) { // we didn't log in successfully
-                        self.displayErrors("Invalid username or password");
+                        self.displayErrors("Invalid username or password.");
                     } else {
                         self.completeLogin(username)
                     }
@@ -127,13 +127,17 @@ SearchView = Backbone.View.extend({
         }
         var set_name = getSetName();
         var set = prod_collection[set_name];
+        var prods = set.get('renderedProds');
         set.checkSet(function() {
             $container = $(".commprod-timeline");
             $container.empty();
-            $.each(set.get('renderedProds'), function (index, item) {
+            $.each(prods, function (index, item) {
                 $container.append(item);
+                if (index === prods.length-1){
+                    addTips(); // re-add tips
+                }
             });
-        })
+        });
     },
 
 });
@@ -151,7 +155,6 @@ SubNavView = Backbone.View.extend({
             this.destroy();
             var template = _.template( $("#subnav_template").html(), {
                     'baseUrl' : baseUrl,
-                    'unvoted' : user.getUnvotedClass(),
                 });
 
             $(this.el).html(template);
@@ -159,6 +162,7 @@ SubNavView = Backbone.View.extend({
             $('#' + tab).addClass('active');      
             searchView = view_collection[tab];
             searchView.render();
+            activateSwitch(); //re-init switches
         }
         
     },
@@ -193,21 +197,6 @@ NavView = Backbone.View.extend({
     },
 });
 
-function clickHandle(e) {
-    e.preventDefault();
-    var url = $(e.target).context.href;
-    if (url.indexOf("logout") !== -1) {
-        loginView.logout();
-    } else if (url.indexOf("http") !== -1){
-        backpage.openLink(url);
-    }else if (url.indexOf("login") !== -1){
-        return
-    } else {
-        url = url.split('#')[1];
-        user.setTab(url);
-        subNavView.render();
-    }
-}
 
 function getSetName() { 
     var tab = user.getTab();
@@ -227,16 +216,49 @@ function updateCurrentSet() {
     set.updateSet();
 }
 
-function unvotedHandle(e) {
+function addTips() {
+    $('.claim-profile').tooltip({
+        "placement" : "right",
+        "title" : "Visit the main site to claim your emails.",
+        "trigger" : "hover",
+    });
+
+    $('.switch').tooltip({
+        "placement" : "bottom",
+        "title" : "Toggle between all comm.prods or only unvoted ones.",
+        "trigger" : "hover",
+    });
+}
+
+function activateSwitch(){
+    $('.switch')['switch']();
+    $('.switch').switch('setState', user.getUnvotedState());
+}
+
+function ajaxSetup(){
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+}
+
+
+//////////Event Handlers ///////////
+function unvotedHandle(e, d) {
     getCurrentView().render(true); //render loading view
-   
-    var $target = $(e.target);
-    $target.toggleClass("active");
     
-    if ($target.hasClass('active')) {
-        user.setUnvoted(true);
-    } else {
+    var value = d.value;
+
+    if (value) {
         user.setUnvoted(false);
+    } else {
+        user.setUnvoted(true);
     }
     $.each(prod_collection, function(key, set){
         set.updateSet(function() {
@@ -245,6 +267,22 @@ function unvotedHandle(e) {
             }
         });
     });
+}
+
+function clickHandle(e) {
+    e.preventDefault();
+    var url = $(e.target).context.href;
+    if (url.indexOf("logout") !== -1) {
+        loginView.logout();
+    } else if (url.indexOf("http") !== -1){
+        backpage.openLink(url);
+    }else if (url.indexOf("login") !== -1){
+        return
+    } else {
+        url = url.split('#')[1];
+        user.setTab(url);
+        subNavView.render();
+    }
 }
 
 ///////////////////URL BUILDERS///////////////////
@@ -278,10 +316,8 @@ function sameOrigin(url) {
         !(/^(\/\/|http:|https:).*/.test(url));
 }
 
-$(document).ready(function() {
-    
-    $(document).on('voteSent', updateCurrentSet);
-
+$(document).ready(function() {    
+    ////global vars//////
     window.backpage = chrome.extension.getBackgroundPage(); //get the background page for state
     user = backpage.user;
     baseUrl = backpage.baseUrl;
@@ -292,30 +328,13 @@ $(document).ready(function() {
             csrftoken = cookie.value;
     });
 
-    $(document).on('click', '.vote-container .vote', voteSelection);
-
-    $(document).on('click', 'a', clickHandle);
-
-    $(document).on('click', '#unvoted-btn', unvotedHandle);
-    
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                // Send the token to same-origin, relative URLs only.
-                // Send the token only if the method warrants CSRF protection
-                // Using the CSRFToken value acquired earlier
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-
     prod_collection = {
         'recent_set' : backpage.recent_set,
         'trending_set' : backpage.trending_set,
         'media_set' : backpage.media_set,
         'best_set' : backpage.best_set,
         'worst_set' : backpage.worst_set,
-    }
+    };
 
     view_collection = { 
         'recent_tab' : new SearchView(),
@@ -323,9 +342,21 @@ $(document).ready(function() {
         'media_tab' : new SearchView(),
         'best_tab' : new SearchView(),
         'worst_tab' : new SearchView(),
-    }
-    navView =  new NavView();
+    };
+
+    navView = new NavView();
     subNavView = new SubNavView();
     loginView = new LoginView();
+
+    /////setup funcs///////
+    ajaxSetup();
+
+    //////event listeners //////
+    $(document).on('click', '.vote-container .vote', voteSelection);
+
+    $(document).on('click', 'a', clickHandle);
+
+    $(document).on('voteSent', updateCurrentSet);
+    $(document).on('switch-change', unvotedHandle);
 
 });

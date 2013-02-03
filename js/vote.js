@@ -116,9 +116,4 @@ $(function(){
 
     $(document).on('voteSent', postVote);
 
-    $('.claim-profile').tooltip({
-        "placement" : "right",
-        "title" : "Visit the main site to claim your emails.",
-        "trigger" : "hover",
-    });
 }); 
