@@ -1,7 +1,9 @@
 comm.prod extension
 ===========
 
-Get current comm.prods in your browser.
+Get current comm.prods in your browser. 
+
+Compliments the [Burton Third Homepage](http://burtonthird.com)
 
 ## Author
 
