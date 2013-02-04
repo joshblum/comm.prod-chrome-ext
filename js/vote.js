@@ -110,10 +110,6 @@ $(function(){
 
     $(document).on('click', '.vote-container .vote', voteSelection);
 
-    $('.permalink').hover(detailsCorrectionText, detailsDefaultText).popover();
-
-    $('.fav').hover(favToggle).click(favVote);
-
     $(document).on('voteSent', postVote);
 
 }); 

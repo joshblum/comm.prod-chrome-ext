@@ -135,6 +135,7 @@ SearchView = Backbone.View.extend({
                 $container.append(item);
                 if (index === prods.length-1){
                     addTips(); // re-add tips
+                    popoverListeners();
                 }
             });
         });
@@ -284,6 +285,12 @@ function clickHandle(e) {
         user.setTab(url);
         subNavView.render();
     }
+}
+
+function popoverListeners() {
+    $('.permalink').hover(detailsCorrectionText, detailsDefaultText).popover();
+
+    $('.fav').hover(favToggle).click(favVote);
 }
 
 ///////////////////URL BUILDERS///////////////////

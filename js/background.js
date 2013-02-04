@@ -5,7 +5,7 @@ var User = Backbone.Model.extend({
         'updateBadge' : 'always', //default to update badge for every new commprod
         'tab' : 'recent_tab',
         'username' : '',
-        'unvoted' : true,
+        'unvoted' : false,
     },
 
     initialize : function() {
@@ -203,8 +203,8 @@ function clearStorage(){
 }
 
 ///////////Global vars/////////////
-var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
-//var baseUrl = "http://burtonthird.com"
+// var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
+var baseUrl = "http://burtonthird.com"
 
 /////////init models///////
 var user = getLocalStorageUser();
