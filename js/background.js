@@ -106,14 +106,6 @@ var ProdSet = Backbone.Model.extend({
         return baseUrl +  sprintf("/commprod/api/search?limit=%s&%s=%s&return_type=%s%s", limit, filterType, filter, return_type, unvoted)
     },
 
-    checkSet : function(callback) {
-        if (this.get('renderedProds').length < 10) {
-            this.updateSet(callback);
-        } else {
-            callback()
-        }
-    },
-
     updateSet : function(callback) {
         var url = this.url_search(this.get('filter'), this.get('filterType'));
         var renderedProds = [];
@@ -135,10 +127,6 @@ var ProdSet = Backbone.Model.extend({
         this.set({
             'renderedProds' : renderedProds
         })
-    },
-
-    clearProds : function() {
-        this.addProds([]);
     },
 
     cleanProd : function(prod) {

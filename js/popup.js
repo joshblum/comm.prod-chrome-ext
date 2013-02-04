@@ -128,7 +128,7 @@ SearchView = Backbone.View.extend({
         var set_name = getSetName();
         var set = prod_collection[set_name];
         var prods = set.get('renderedProds');
-        set.checkSet(function() {
+        set.updateSet(function() {
             $container = $(".commprod-timeline");
             $container.empty();
             $.each(prods, function (index, item) {
@@ -186,6 +186,7 @@ NavView = Backbone.View.extend({
         var template = _.template($("#nav_template").html(), {
                 baseUrl : baseUrl,
                 loggedIn : loggedIn,
+                username : user.getUsername(),
             });
 
         $(this.el).html(template);

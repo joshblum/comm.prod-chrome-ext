@@ -44,6 +44,9 @@
                         <li id="home_tab" class="nav-tab">
                             <a href="<%= baseUrl %>">comm.prod</a>
                         </li>
+                        <li id="profile_tab" class="nav-tab">
+                            <a href="<%= baseUrl %>/users/<%= username %>">Profile</a>
+                        </li>
                         <li>
                              <a href="<%= baseUrl %>/donations/donate">Donate</a>
                         </li>
@@ -95,7 +98,7 @@
                             Worst
                         </a>
                     </li>
-                    <div class="switch" data-on="warning" data-off="info" data-on-label="All" data-off-label="Some">
+                    <div class="switch switch-small" data-on="warning" data-off="info" data-on-label="All" data-off-label="Some">
                         <input type="checkbox">
                     </div>
                 </ul>
