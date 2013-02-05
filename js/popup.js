@@ -35,6 +35,7 @@ LoginView = Backbone.View.extend({
 
     getLogin : function() {
         $('#errors').fadeOut();
+        $('#login').button('loading');
         var self = this;
         var username = $('#id_username').val();
         var password = $('#id_password').val();
@@ -104,7 +105,8 @@ LoginView = Backbone.View.extend({
     },
 
     displayErrors : function(errorMsg) {
-        $errorDiv = $('#errors');
+        $('#login').button('reset');
+        var $errorDiv = $('#errors');
         $errorDiv.html(errorMsg);
         $errorDiv.fadeIn();
     },
