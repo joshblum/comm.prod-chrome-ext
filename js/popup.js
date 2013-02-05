@@ -85,7 +85,7 @@ LoginView = Backbone.View.extend({
 
     completeLogin : function(username) {
         $('#login_container').remove();
-        $('body').css('width', '650px');
+        $('body').css('width', '600px');
 
         user.login();
         user.setUsername(username);
