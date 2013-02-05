@@ -96,22 +96,32 @@ var ProdSet = Backbone.Model.extend({
         return this.get('tab')
     },
 
-    url_search : function(filter, filterType, limit) { 
-        var limit = limit || 30;
+    url_search : function(filter, filterType, limit) {
+        filter = filter || this.get('filter');
+        filterType = filterType || this.get('filterType');
+        limit = limit || 33;
         var return_type = "list";
-        var unvoted = '';
-        if (user.getUnvoted()) {
-            unvoted = '&unvoted=true';
-        }
+        var unvoted = this.getUnvotedArg()
         return baseUrl +  sprintf("/commprod/api/search?limit=%s&%s=%s&return_type=%s%s", limit, filterType, filter, return_type, unvoted)
     },
 
+    getUnvotedArg : function() {
+        if (user.getUnvoted()) {
+            return '&unvoted=true';
+        }
+        return ''
+    },
+
     updateSet : function(callback) {
-        var url = this.url_search(this.get('filter'), this.get('filterType'));
+        var url = this.url_search();
         var renderedProds = [];
         var cleanProd = this.cleanProd;
         var that = this;
         $.get(url, function(data) {
+            if(data.res === undefined) { //we aren't logged in
+                chrome.extension.sendMessage('logout');
+                return
+            }
             $.each(data.res, function(index, prod) {
                 prod = cleanProd(String(prod));
                 renderedProds.push(prod);
@@ -137,6 +147,10 @@ var ProdSet = Backbone.Model.extend({
         prod = prod.replace(href_find, href_replace);
         prod = prod.replace(src_find, src_replace);
         return prod
+    },
+
+    getProdLink : function() {
+        return baseUrl + sprintf("/commprod/search?page=2%s&%s=%s", this.getUnvotedArg(), this.get('filterType'), this.get('filter'))
     },
 });
 
@@ -203,16 +217,16 @@ function clearStorage(){
 }
 
 ///////////Global vars/////////////
-// var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
-var baseUrl = "http://burtonthird.com"
+var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
+// var baseUrl = "http://burtonthird.com"
 
 /////////init models///////
 var user = getLocalStorageUser();
 initBadge();
 
 var recent_set = new ProdSet({ 
-    filter : "-date", 
-    filterType : "orderBy",
+    filter : "recent", 
+    filterType : "type",
     tab : 'recent_tab',
 });
 

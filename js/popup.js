@@ -117,23 +117,26 @@ SearchView = Backbone.View.extend({
     render : function(loading) {
         loading = loading || false;
         $('.content-container').empty();
-        var template = _.template( $("#timeline_template").html(), {
-                'baseUrl' : baseUrl,
-            });
-
-        $(this.el).html(template);
-        if (loading) {
-            return
-        }
         var set_name = getSetName();
         var set = prod_collection[set_name];
         var prods = set.get('renderedProds');
+        var template = _.template( $("#timeline_template").html(), {
+                'baseUrl' : baseUrl,
+                'moreProdsLink' : set.getProdLink(),
+            });
+
+        $(this.el).html(template);
+        $('.btn-prod').hide();
+        if (loading) {
+            return
+        }
         set.updateSet(function() {
             $container = $(".commprod-timeline");
             $container.empty();
             $.each(prods, function (index, item) {
                 $container.append(item);
                 if (index === prods.length-1){
+                    $('.btn-prod').show();
                     addTips(); // re-add tips
                     popoverListeners();
                 }
@@ -160,7 +163,7 @@ SubNavView = Backbone.View.extend({
 
             $(this.el).html(template);
             $('.subnav-tab').removeClass('active');
-            $('#' + tab).addClass('active');      
+            $('#' + tab).addClass('active');
             searchView = view_collection[tab];
             searchView.render();
             activateSwitch(); //re-init switches
@@ -178,7 +181,6 @@ NavView = Backbone.View.extend({
 
     initialize : function(){
         this.render('home_tab');
-        $('.brand').blur()
     },
 
     render : function(tab) {
@@ -195,7 +197,6 @@ NavView = Backbone.View.extend({
             tab = "login_tab"
         }
         $('nav-tab').removeClass('active');
-        $('#' + tab).addClass('active');
     },
 });
 
@@ -287,6 +288,10 @@ function clickHandle(e) {
     }
 }
 
+function moreProds(e) {
+    backpage.openLink($(e.target).data('link'));
+}
+
 function popoverListeners() {
     $('.permalink').hover(detailsCorrectionText, detailsDefaultText).popover();
 
@@ -361,10 +366,18 @@ $(document).ready(function() {
 
     //////event listeners //////
     $(document).on('click', '.vote-container .vote', voteSelection);
+    $(document).on('click', '.btn-prod', moreProds);
 
     $(document).on('click', 'a', clickHandle);
 
     $(document).on('voteSent', updateCurrentSet);
     $(document).on('switch-change', unvotedHandle);
+
+    chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
+        if (msg === 'logout') {
+            loginView.logout();
+        }
+        sendResponse(); //close connection
+    });
 
 });
