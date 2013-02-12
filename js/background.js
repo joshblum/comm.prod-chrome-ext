@@ -217,7 +217,7 @@ function clearStorage(){
 }
 
 ///////////Global vars/////////////
-// var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
+//var baseUrl = "http://localhost:8000" // global website base, set to localhost for testing
 var baseUrl = "http://burtonthird.com"
 
 /////////init models///////

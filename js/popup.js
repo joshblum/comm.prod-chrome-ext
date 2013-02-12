@@ -240,7 +240,8 @@ function activateSwitch(){
     $('.switch').switch('setState', user.getUnvotedState());
 }
 
-function ajaxSetup(){
+function ajaxSetup(csrftoken){
+
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!csrfSafeMethod(settings.type)) {
@@ -337,12 +338,6 @@ $(document).ready(function() {
     user = backpage.user;
     baseUrl = backpage.baseUrl;
 
-    chrome.cookies.get({
-        'name' :'csrftoken', 'url' : baseUrl
-        }, function(cookie){
-            csrftoken = cookie.value;
-    });
-
     prod_collection = {
         'recent_set' : backpage.recent_set,
         'trending_set' : backpage.trending_set,
@@ -359,12 +354,13 @@ $(document).ready(function() {
         'worst_tab' : new SearchView(),
     };
 
-    navView = new NavView();
-    subNavView = new SubNavView();
-    loginView = new LoginView();
-
     /////setup funcs///////
-    ajaxSetup();
+    chrome.cookies.get({
+        'name' :'csrftoken', 
+        'url' : baseUrl
+        }, function(cookie){
+            ajaxSetup(cookie.value);
+    });
 
     //////event listeners //////
     $(document).on('click', '.vote-container .vote', voteSelection);
@@ -382,4 +378,9 @@ $(document).ready(function() {
         sendResponse(); //close connection
     });
 
+
+    /////init views/////
+    navView = new NavView();
+    subNavView = new SubNavView();
+    loginView = new LoginView();
 });
